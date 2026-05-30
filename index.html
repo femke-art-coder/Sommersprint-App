@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sommersprint</title>
+    <style>
+        /* ═══════════════════════════════
+   VARIABLEN & BASIS
+═══════════════════════════════ */
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --heizung: #e84545;
+            --elektro: #4545e8;
+            --sanitaer: #45a845;
+            --bg: #f4f6f9;
+            --card: #fff;
+            --border: #dde3ed;
+            --text: #1e2532;
+            --text-light: #6b7a99;
+            --radius: 14px;
+            --shadow: 0 2px 16px rgba(0, 0, 0, 0.09);
+            --tap: 48px;
+            /* min tap target */
+            --bottom-nav: 64px;
+            --topbar: 54px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all .15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        input,
+        select {
+            font-family: inherit;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            color: var(--text);
+            outline: none;
+            width: 100%;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, .15);
+        }
+
+        /* ═══════════════════════════════
+   VIEWS
+═══════════════════════════════ */
+        .view {
+            display: none;
+            position: fixed;
+            inset: 0;
+            flex-direction: column;
+            background: var(--bg);
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        /* ═══════════════════════════════
+   TOPBAR
+═══════════════════════════════ */
+        .topbar {
+            height: var(--topbar);
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 8px rgba(0, 0, 0, .06);
+            z-index: 100;
+        }
+
+        .topbar .logo {
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--primary);
+        }
+
+        .topbar .breadcrumb {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--text-light);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .topbar .breadcrumb b {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .topbar .sep {
+            color: var(--border);
+        }
+
+        .btn-back {
+            height: var(--tap);
+            min-width: var(--tap);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+
+        .btn-back:active {
+            background: var(--border);
+        }
+
+        .fach-badge {
+            border-radius: 20px;
+            padding: 5px 13px;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            color: #fff;
+            background: var(--heizung);
+        }
+
+        .fach-badge.elektro {
+            background: var(--elektro);
+        }
+
+        .fach-badge.sanitaer {
+            background: var(--sanitaer);
+        }
+
+        /* ═══════════════════════════════
+   BOTTOM NAV (Mobile)
+═══════════════════════════════ */
+        .bottom-nav {
+            height: var(--bottom-nav);
+            background: #fff;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: stretch;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, .07);
+            z-index: 100;
+        }
+
+        .bnav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            background: none;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+            border-right: 1px solid var(--border);
+        }
+
+        .bnav-btn:last-child {
+            border-right: none;
+        }
+
+        .bnav-btn.active {
+            color: var(--primary);
+        }
+
+        .bnav-btn .bnav-icon {
+            font-size: 22px;
+        }
+
+        /* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(30, 37, 50, .92);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all .25s;
+            pointer-events: none;
+            z-index: 9999;
+            white-space: nowrap;
+            max-width: 90vw;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ═══════════════════════════════
+   VIEW 1 – FACHBEREICH
+═══════════════════════════════ */
+        #view-fach {
+            overflow-y: auto;
+        }
+
+        .fach-header {
+            padding: 28px 20px 12px;
+            text-align: center;
+        }
+
+        .fach-header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .fach-header p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .fach-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            padding: 0 16px 16px;
+        }
+
+        @media(min-width:480px) {
+            .fach-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .fach-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 24px 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 2.5px solid transparent;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fach-card:active {
+            transform: scale(.97);
+        }
+
+        .fach-card.selected.heizung {
+            border-color: var(--heizung);
+            background: rgba(232, 69, 69, .05);
+        }
+
+        .fach-card.selected.elektro {
+            border-color: var(--elektro);
+            background: rgba(69, 69, 232, .05);
+        }
+
+        .fach-card.selected.sanitaer {
+            border-color: var(--sanitaer);
+            background: rgba(69, 168, 69, .05);
+        }
+
+        .fach-card.selected.sonstiges {
+            border-color: var(--primary);
+            background: rgba(26, 115, 232, .05);
+        }
+
+        .fach-icon {
+            font-size: 40px;
+        }
+
+        .fach-name {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .fach-desc {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .btn-primary {
+            display: block;
+            width: calc(100% - 32px);
+            margin: 0 16px 24px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .btn-primary:active {
+            background: var(--primary-dark);
+        }
+
+        .btn-primary:disabled {
+            background: var(--border);
+            color: var(--text-light);
+        }
+
+        /* ═══════════════════════════════
+   VIEW 2 – GRUNDRISS
+═══════════════════════════════ */
+        #view-grundriss {
+            overflow: hidden;
+        }
+
+        .stock-tabs {
+            display: flex;
+            overflow-x: auto;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 0 12px;
+            gap: 6px;
+            flex-shrink: 0;
+            scrollbar-width: none;
+        }
+
+        .stock-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .stab {
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 10px 10px 0 0;
+            background: none;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            white-space: nowrap;
+            flex-shrink: 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .stab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .grundriss-area {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            position: relative;
+        }
+
+        #grundriss-svg {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            max-width: 100%;
+            max-height: 100%;
+            touch-action: none;
+        }
+
+        /* Legende */
+        .legende {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 11px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .leg-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .leg-dot {
+            width: 12px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        /* ═══════════════════════════════
+   VIEW 3 – RAUM
+═══════════════════════════════ */
+        #view-raum {
+            overflow: hidden;
+        }
+
+        .raum-main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .raum-svg-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            overflow: hidden;
+        }
+
+        #raum-svg {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .raum-info-strip {
+            background: #fff;
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            flex-shrink: 0;
+        }
+
+        .raum-name-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .raum-name-row input {
+            flex: 1;
+        }
+
+        .mic-btn {
+            height: var(--tap);
+            width: var(--tap);
+            min-width: var(--tap);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .mic-btn:active {
+            background: rgba(26, 115, 232, .1);
+        }
+
+        .mic-btn.listening {
+            background: rgba(232, 69, 69, .12);
+            border-color: var(--heizung);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(232, 69, 69, .4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(232, 69, 69, 0);
+            }
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .chip {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .waende-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .waende-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .wand-chip {
+            flex-shrink: 0;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-height: var(--tap);
+        }
+
+        .wand-chip:active {
+            background: rgba(26, 115, 232, .08);
+        }
+
+        .wand-chip.selected {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(26, 115, 232, .08);
+        }
+
+        .wand-chip .wc-badge {
+            background: var(--heizung);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 10px;
+            padding: 1px 6px;
+            font-weight: 700;
+        }
+
+        .wand-chip .sz-icon {
+            font-size: 14px;
+        }
+
+        .btn-add-wand {
+            flex-shrink: 0;
+            background: none;
+            border: 1.5px dashed var(--border);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--text-light);
+            min-height: var(--tap);
+        }
+
+        .btn-add-wand:active {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* ═══════════════════════════════
+   VIEW 4 – WAND
+═══════════════════════════════ */
+        #view-wand {
+            overflow: hidden;
+        }
+
+        .wand-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Skala-Bar */
+        .skala-bar {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .skala-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .skala-item input[type=range] {
+            width: 90px;
+            border: none;
+            padding: 0;
+            accent-color: var(--primary);
+            height: 20px;
+        }
+
+        .skala-val {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 64px;
+            text-align: center;
+        }
+
+        .raster-info {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        /* Canvas Container */
+        .canvas-wrap {
+            flex: 1;
+            overflow: auto;
+            background: #e8ecf3;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #wand-canvas {
+            display: block;
+            margin: 16px auto;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .13);
+            border: 1px solid var(--border);
+            touch-action: none;
+        }
+
+        /* Riegel auf Canvas */
+        .riegel-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .riegel-bar {
+            height: 32px;
+            background: #fff;
+            border-top: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .riegel-bar.top {
+            border-top: none;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .riegel-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary);
+            cursor: ew-resize;
+            touch-action: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .riegel-line::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+        }
+
+        .riegel-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: #fff;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* Bottom Panel (Drawer) */
+        .wand-panel {
+            background: #fff;
+            border-top: 1px solid var(--border);
+            display: none;
+            flex-direction: column;
+            max-height: 45vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .wand-panel.active {
+            display: flex;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        /* Bottom Nav Wand */
+        .wand-bnav {
+            height: var(--bottom-nav);
+            background: #fff;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: stretch;
+            flex-shrink: 0;
+            z-index: 100;
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, .07);
+        }
+
+        .wbnav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            background: none;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+            border-right: 1px solid var(--border);
+        }
+
+        .wbnav-btn:last-child {
+            border-right: none;
+        }
+
+        .wbnav-btn.active {
+            color: var(--primary);
+            background: rgba(26, 115, 232, .05);
+        }
+
+        .wbnav-btn .wbi {
+            font-size: 22px;
+        }
+
+        /* Werkzeug-Toolbar (im Panel) */
+        .tool-row {
+            display: flex;
+            gap: 6px;
+            padding: 10px 12px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            scrollbar-width: none;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tool-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tool-btn {
+            flex-shrink: 0;
+            height: var(--tap);
+            padding: 0 14px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .tool-btn:active,
+        .tool-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .tool-btn.danger.active {
+            background: var(--heizung);
+            border-color: var(--heizung);
+        }
+
+        /* Material */
+        .mat-search {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mat-kat {
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            background: var(--bg);
+        }
+
+        .mat-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            min-height: 56px;
+        }
+
+        .mat-item:active {
+            background: rgba(26, 115, 232, .06);
+        }
+
+        .mat-item.selected {
+            background: rgba(26, 115, 232, .1);
+        }
+
+        .mat-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .mat-info {
+            flex: 1;
+        }
+
+        .mat-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .mat-din {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .mat-lager {
+            font-size: 11px;
+            color: var(--sanitaer);
+            margin-top: 2px;
+        }
+
+        /* Verbaut-Liste */
+        .verbaut-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .v-typ {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .v-din {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .v-lager {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-top: 6px;
+        }
+
+        .lager-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 10px 12px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .lager-row input {
+            flex: 1;
+        }
+
+        /* Vollbild Overlay */
+        .vb-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20, 28, 46, .96);
+            padding: 10px 12px;
+            z-index: 1000;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .vb-overlay.active {
+            display: flex;
+        }
+
+        .vb-tools {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .vb-tool {
+            height: 40px;
+            padding: 0 14px;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .vb-tool.active {
+            background: var(--primary);
+        }
+
+        .vb-fertig {
+            height: 40px;
+            padding: 0 18px;
+            background: #27ae60;
+            color: #fff;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            margin-left: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- VOLLBILD OVERLAY -->
+    <div class="vb-overlay" id="vb-overlay">
+        <span style="color:#fff;font-size:13px;font-weight:700;">✏️ Zeichenmodus</span>
+        <div class="vb-tools" id="vb-tools"></div>
+        <select id="vb-dn"
+            style="background:#2d3748;color:#fff;border:1px solid #4a5568;border-radius:8px;padding:6px 10px;font-size:13px;width:auto;">
+            <option>DN12</option>
+            <option>DN15</option>
+            <option selected>DN22</option>
+            <option>DN28</option>
+            <option>DN35</option>
+            <option>DN42</option>
+            <option>DN54</option>
+        </select>
+        <button class="vb-fertig" onclick="verlasseVollbild()">✓ Fertig</button>
+    </div>
+
+    <!-- ═══════════════════════════════
+     VIEW 1 – FACHBEREICH
+═══════════════════════════════ -->
+    <div class="view active" id="view-fach">
+        <div class="topbar">
+            <div class="logo">🏗️ Sommersprint</div>
+            <div style="flex:1;text-align:center;font-weight:700;font-size:15px;">Gewerk wählen</div>
+        </div>
+        <div class="fach-header">
+            <h1>Haus 1</h1>
+            <p>Welches Gewerk wird heute bearbeitet?</p>
+        </div>
+        <div class="fach-grid">
+            <div class="fach-card heizung" onclick="wahleFach('heizung',this)">
+                <div class="fach-icon">🔥</div>
+                <div class="fach-name">Heizung</div>
+                <div class="fach-desc">Rohre, Heizkörper, FBH</div>
+            </div>
+            <div class="fach-card elektro" onclick="wahleFach('elektro',this)">
+                <div class="fach-icon">⚡</div>
+                <div class="fach-name">Elektro</div>
+                <div class="fach-desc">Kabel, Leitungen</div>
+            </div>
+            <div class="fach-card sanitaer" onclick="wahleFach('sanitaer',this)">
+                <div class="fach-icon">💧</div>
+                <div class="fach-name">Sanitär</div>
+                <div class="fach-desc">Wasser, Abwasser</div>
+            </div>
+            <div class="fach-card sonstiges" onclick="wahleFach('sonstiges',this)">
+                <div class="fach-icon">🔧</div>
+                <div class="fach-name">Sonstiges</div>
+                <div class="fach-desc">Allgemein</div>
+            </div>
+        </div>
+        <button class="btn-primary" id="btn-weiter" disabled onclick="zeigeGrundriss()">
+            Weiter zum Grundriss →
+        </button>
+    </div>
+
+    <!-- ═══════════════════════════════
+     VIEW 2 – GRUNDRISS
+═══════════════════════════════ -->
+    <div class="view" id="view-grundriss">
+        <div class="topbar">
+            <button class="btn-back" onclick="zeigeView('view-fach')">← Zurück</button>
+            <div class="breadcrumb">
+                <b>Haus 1</b>
+                <span class="sep">›</span>
+                <span id="bc-stock">EG</span>
+            </div>
+            <div class="fach-badge" id="badge-gr">🔥 Heizung</div>
+        </div>
+        <div class="stock-tabs" id="stock-tabs"></div>
+        <div class="grundriss-area">
+            <svg id="grundriss-svg" viewBox="0 0 580 430"></svg>
+            <div class="legende">
+                <div class="leg-item">
+                    <div class="leg-dot" style="background:#e84545;height:3px;"></div>Tür
+                </div>
+                <div class="leg-item">
+                    <div class="leg-dot" style="background:#4a90d9;height:3px;"></div>Fenster
+                </div>
+                <div class="leg-item">
+                    <div class="leg-dot" style="background:#888;height:3px;border-style:dashed;"></div>Treppe
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+     VIEW 3 – RAUM
+═══════════════════════════════ -->
+    <div class="view" id="view-raum">
+        <div class="topbar">
+            <button class="btn-back" onclick="zeigeView('view-grundriss')">← Grundriss</button>
+            <div class="breadcrumb">
+                <b id="bc-raum-stock">EG</b>
+                <span class="sep">›</span>
+                <span id="bc-raum-name">Raum</span>
+            </div>
+            <div class="fach-badge" id="badge-raum">🔥 Heizung</div>
+        </div>
+        <div class="raum-main">
+            <div class="raum-svg-wrap">
+                <svg id="raum-svg" viewBox="0 0 400 340"></svg>
+            </div>
+            <div class="raum-info-strip">
+                <!-- Name + Sprache -->
+                <div class="raum-name-row">
+                    <input type="text" id="raum-name-inp" placeholder="Raumname…" oninput="aktualisiereRaumname()" />
+                    <button class="mic-btn" id="mic-raum" onclick="startSpeech('raum-name-inp','mic-raum')"
+                        title="Spracheingabe Raumname">🎤</button>
+                </div>
+                <!-- Chips: ID, Maße -->
+                <div class="chips" id="raum-chips"></div>
+                <!-- Wände -->
+                <div
+                    style="font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;">
+                    Wände – antippen zum Öffnen
+                </div>
+                <div class="waende-scroll" id="waende-scroll"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+     VIEW 4 – WAND
+═══════════════════════════════ -->
+    <div class="view" id="view-wand">
+        <div class="topbar">
+            <button class="btn-back" onclick="zeigeView('view-raum')">← Raum</button>
+            <div class="breadcrumb">
+                <b id="bc-wand-raum">Raum</b>
+                <span class="sep">›</span>
+                <span id="bc-wand-name">Wand</span>
+            </div>
+            <div class="fach-badge" id="badge-wand">🔥 Heizung</div>
+        </div>
+        <div class="wand-main">
+            <!-- Skala Regler -->
+            <div class="skala-bar">
+                <div class="skala-item">
+                    ↔
+                    <input type="range" id="sl-breite" min="50" max="2000" value="420" oninput="updateSkala()">
+                    <div class="skala-val"><span id="vBreite">420</span> cm</div>
+                </div>
+                <div class="skala-item">
+                    ↕
+                    <input type="range" id="sl-hoehe" min="150" max="600" value="248" oninput="updateSkala()">
+                    <div class="skala-val"><span id="vHoehe">248</span> cm</div>
+                </div>
+                <div class="raster-info" id="raster-info">10 cm/Kästchen</div>
+            </div>
+
+            <!-- Riegel OBEN (Verlegetiefe) -->
+            <div class="riegel-bar top" id="riegel-oben-bar">
+                <div class="riegel-line" id="riegel-oben" style="left:30%" onmousedown="startRiegel('oben',event)"
+                    ontouchstart="startRiegel('oben',event)">
+                </div>
+                <div class="riegel-label" id="riegel-oben-label" style="left:calc(30% + 6px)">
+                    Tiefe: 5 cm
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <div class="canvas-wrap" id="canvas-wrap">
+                <canvas id="wand-canvas" onclick="canvasKlick(event)" ontouchend="canvasTouchEnd(event)">
+                </canvas>
+            </div>
+
+            <!-- Riegel UNTEN (Verlegehöhe) -->
+            <div class="riegel-bar" id="riegel-unten-bar">
+                <div class="riegel-line" id="riegel-unten" style="left:15%" onmousedown="startRiegel('unten',event)"
+                    ontouchstart="startRiegel('unten',event)">
+                </div>
+                <div class="riegel-label" id="riegel-unten-label" style="left:calc(15% + 6px)">
+                    Höhe: 30 cm
+                </div>
+            </div>
+
+            <!-- Bottom Panel (Drawer) -->
+            <!-- Panel: Verbaut -->
+            <div class="wand-panel active" id="panel-verbaut">
+                <div class="panel-header">
+                    📦 Verbaut auf dieser Wand
+                    <button onclick="oeffneVollbild()"
+                        style="background:var(--primary);color:#fff;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;">⛶
+                        Vollbild</button>
+                </div>
+                <div id="verbaut-list">
+                    <div style="padding:20px;text-align:center;color:var(--text-light);font-size:13px;">Noch nichts
+                        verbaut</div>
+                </div>
+                <div class="lager-row">
+                    <input type="text" id="lagerort-inp" placeholder="Lagerort (z.B. Regal B3)…" />
+                    <button class="mic-btn" id="mic-lager" onclick="startSpeech('lagerort-inp','mic-lager')"
+                        style="margin-left:8px;" title="Spracheingabe Lagerort">🎤</button>
+                </div>
+            </div>
+
+            <!-- Panel: Zeichnen (Werkzeuge) -->
+            <div class="wand-panel" id="panel-zeichnen">
+                <div class="panel-header">✏️ Werkzeuge</div>
+                <div class="tool-row" id="tool-row"></div>
+                <div
+                    style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);">
+                    <span style="font-size:12px;font-weight:600;color:var(--text-light);">Durchmesser:</span>
+                    <select id="dn-select" style="width:auto;flex:1;">
+                        <option value="12">DN 12</option>
+                        <option value="15">DN 15</option>
+                        <option value="22" selected>DN 22</option>
+                        <option value="28">DN 28</option>
+                        <option value="35">DN 35</option>
+                        <option value="42">DN 42</option>
+                        <option value="54">DN 54</option>
+                    </select>
+                    <button class="tool-btn danger" id="tool-loeschen" onclick="wahleTool('loeschen',this)"
+                        style="flex-shrink:0;width:auto;">✕ Löschen</button>
+                    <button class="tool-btn" onclick="undo()" style="flex-shrink:0;width:auto;">↩ Undo</button>
+                </div>
+            </div>
+
+            <!-- Panel: Material -->
+            <div class="wand-panel" id="panel-material">
+                <div class="panel-header">🧱 Materialliste – Heizung</div>
+                <div class="mat-search">
+                    <input type="text" id="mat-search" placeholder="🔍 Material suchen…" oninput="filterMat()" />
+                </div>
+                <div id="mat-list"></div>
+            </div>
+
+            <!-- Bottom Nav -->
+            <div class="wand-bnav">
+                <button class="wbnav-btn active" id="bnav-verbaut" onclick="zeigePanel('verbaut')">
+                    <span class="wbi">📦</span>Verbaut
+                </button>
+                <button class="wbnav-btn" id="bnav-zeichnen" onclick="zeigePanel('zeichnen')">
+                    <span class="wbi">✏️</span>Zeichnen
+                </button>
+                <button class="wbnav-btn" id="bnav-material" onclick="zeigePanel('material')">
+                    <span class="wbi">🧱</span>Material
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ═══════════════════════════════════════════════
+           DATENBASIS
+        ═══════════════════════════════════════════════ */
+        const PROJEKT = {
+            stockwerke: [
+                {
+                    id: "UG", name: "Untergeschoss",
+                    raeume: [
+                        {
+                            id: "UG.01", name: "Heizungskeller", typ: "technik",
+                            breite: 520, tiefe: 480, hoehe: 220,
+                            polygon: [{ x: 40, y: 50 }, { x: 260, y: 50 }, { x: 260, y: 250 }, { x: 40, y: 250 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Nordwand", breite: 520, hoehe: 220, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Ostwand", breite: 480, hoehe: 220, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 80, breite: 80, bruestung: 80, sturz: 180, label: "Fenster" }], objekte: []
+                                },
+                                {
+                                    id: "W-03", name: "Südwand (Eingang)", breite: 520, hoehe: 220, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 180, breite: 90, bruestung: 0, sturz: 210, label: "Tür", oeffnung: "rechts" }], objekte: []
+                                },
+                                {
+                                    id: "W-04", name: "Westwand", breite: 480, hoehe: 220, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "EG", name: "Erdgeschoss",
+                    raeume: [
+                        {
+                            id: "EG.01", name: "Wohnzimmer", typ: "wohnen",
+                            breite: 580, tiefe: 490, hoehe: 248,
+                            polygon: [{ x: 40, y: 40 }, { x: 280, y: 40 }, { x: 280, y: 240 }, { x: 40, y: 240 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Südwand (Terrassentür)", breite: 580, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 200, breite: 120, bruestung: 0, sturz: 215, label: "Terrassentür", oeffnung: "links" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Westwand (Außen)", breite: 490, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 80, breite: 140, bruestung: 90, sturz: 210, label: "Fenster 140cm" }], objekte: []
+                                },
+                                {
+                                    id: "W-03", name: "Nordwand", breite: 580, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 120, breite: 120, bruestung: 90, sturz: 210, label: "Fenster 120cm" }], objekte: [
+                                        {
+                                            id: "O-001", typ: "rohr_gerade", dn: 22, din: "DIN EN 1057", name: "Kupferrohr 22mm",
+                                            x: 60, y: 180, laenge: 200, farbe: "#e84545",
+                                            lagerort: { regal: "Regal B3", bestand: 12, einheit: "m" }
+                                        }
+                                    ]
+                                },
+                                {
+                                    id: "W-04", name: "Ostwand (zu Küche)", breite: 490, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 80, breite: 90, bruestung: 0, sturz: 210, label: "Tür Küche", oeffnung: "rechts" }], objekte: []
+                                }
+                            ]
+                        },
+                        {
+                            id: "EG.02", name: "Küche", typ: "kueche",
+                            breite: 340, tiefe: 290, hoehe: 248,
+                            polygon: [{ x: 280, y: 40 }, { x: 430, y: 40 }, { x: 430, y: 200 }, { x: 280, y: 200 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Westwand (zu Wohnzimmer)", breite: 290, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 80, breite: 90, bruestung: 0, sturz: 210, label: "Tür", oeffnung: "links" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Nordwand", breite: 340, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 60, breite: 100, bruestung: 90, sturz: 210, label: "Fenster 100cm" }], objekte: []
+                                },
+                                {
+                                    id: "W-03", name: "Ostwand", breite: 290, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                },
+                                {
+                                    id: "W-04", name: "Südwand", breite: 340, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                }
+                            ]
+                        },
+                        {
+                            id: "EG.03", name: "Flur", typ: "flur",
+                            breite: 180, tiefe: 490, hoehe: 248,
+                            polygon: [{ x: 430, y: 40 }, { x: 530, y: 40 }, { x: 530, y: 370 }, { x: 430, y: 370 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Ostwand (Haustür)", breite: 490, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 160, breite: 100, bruestung: 0, sturz: 215, label: "Haustür", oeffnung: "links" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Nordwand", breite: 180, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                },
+                                {
+                                    id: "W-03", name: "Westwand", breite: 490, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                },
+                                {
+                                    id: "W-04", name: "Südwand", breite: 180, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                }
+                            ]
+                        },
+                        {
+                            id: "EG.04", name: "Bad / WC", typ: "bad",
+                            breite: 200, tiefe: 200, hoehe: 248,
+                            polygon: [{ x: 280, y: 200 }, { x: 430, y: 200 }, { x: 430, y: 370 }, { x: 280, y: 370 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Nordwand (Tür)", breite: 200, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 40, breite: 80, bruestung: 0, sturz: 210, label: "Tür", oeffnung: "rechts" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Ostwand", breite: 200, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 50, breite: 60, bruestung: 120, sturz: 210, label: "Fenster 60cm" }], objekte: []
+                                },
+                                {
+                                    id: "W-03", name: "Südwand", breite: 200, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                },
+                                {
+                                    id: "W-04", name: "Westwand", breite: 200, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                }
+                            ]
+                        },
+                        {
+                            id: "EG.05", name: "Schlafzimmer", typ: "schlafen",
+                            breite: 420, tiefe: 300, hoehe: 248,
+                            polygon: [{ x: 40, y: 240 }, { x: 280, y: 240 }, { x: 280, y: 370 }, { x: 40, y: 370 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Ostwand (Tür zum Flur)", breite: 300, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 80, breite: 90, bruestung: 0, sturz: 210, label: "Tür Flur", oeffnung: "links" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Nordwand (zu Wohnzimmer)", breite: 420, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                },
+                                {
+                                    id: "W-03", name: "Westwand (Außen)", breite: 300, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [], objekte: []
+                                },
+                                {
+                                    id: "W-04", name: "Südwand (Außen)", breite: 420, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 100, breite: 140, bruestung: 90, sturz: 210, label: "Fenster 140cm" }], objekte: []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "OG1", name: "Obergeschoss 1",
+                    raeume: [
+                        {
+                            id: "OG1.TH", name: "Treppenhaus", typ: "treppe",
+                            breite: 180, tiefe: 200, hoehe: 280,
+                            polygon: [{ x: 380, y: 40 }, { x: 480, y: 40 }, { x: 480, y: 160 }, { x: 380, y: 160 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Südwand (Zugang)", breite: 180, hoehe: 280, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 40, breite: 90, bruestung: 0, sturz: 210, label: "Zugang", oeffnung: "rechts" }], objekte: []
+                                },
+                                { id: "W-02", name: "Ostwand", breite: 200, hoehe: 280, hatTuer: false, sperrzonen: [], objekte: [] },
+                                { id: "W-03", name: "Nordwand", breite: 180, hoehe: 280, hatTuer: false, sperrzonen: [], objekte: [] },
+                                { id: "W-04", name: "Westwand", breite: 200, hoehe: 280, hatTuer: false, sperrzonen: [], objekte: [] }
+                            ]
+                        },
+                        {
+                            id: "OG1.FL", name: "Flur OG", typ: "flur",
+                            breite: 160, tiefe: 300, hoehe: 248,
+                            polygon: [{ x: 480, y: 40 }, { x: 560, y: 40 }, { x: 560, y: 300 }, { x: 480, y: 300 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Westwand (Treppenhaus)", breite: 300, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 60, breite: 90, bruestung: 0, sturz: 210, label: "Zum Treppenhaus", oeffnung: "links" }], objekte: []
+                                },
+                                { id: "W-02", name: "Nordwand", breite: 160, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] },
+                                { id: "W-03", name: "Ostwand", breite: 300, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] },
+                                { id: "W-04", name: "Südwand", breite: 160, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] }
+                            ]
+                        },
+                        {
+                            id: "OG1.01", name: "Kinderzimmer 1", typ: "schlafen",
+                            breite: 380, tiefe: 360, hoehe: 248,
+                            polygon: [{ x: 40, y: 40 }, { x: 240, y: 40 }, { x: 240, y: 240 }, { x: 40, y: 240 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Ostwand (Tür)", breite: 360, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 80, breite: 90, bruestung: 0, sturz: 210, label: "Tür", oeffnung: "links" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Nordwand", breite: 380, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 80, breite: 120, bruestung: 90, sturz: 210, label: "Fenster 120cm" }], objekte: []
+                                },
+                                { id: "W-03", name: "Westwand", breite: 360, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] },
+                                { id: "W-04", name: "Südwand", breite: 380, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] }
+                            ]
+                        },
+                        {
+                            id: "OG1.02", name: "Kinderzimmer 2", typ: "schlafen",
+                            breite: 340, tiefe: 360, hoehe: 248,
+                            polygon: [{ x: 240, y: 40 }, { x: 380, y: 40 }, { x: 380, y: 240 }, { x: 240, y: 240 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Westwand (Tür)", breite: 360, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 70, breite: 85, bruestung: 0, sturz: 210, label: "Tür", oeffnung: "rechts" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Nordwand", breite: 340, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [{ typ: "fenster", x: 70, breite: 100, bruestung: 90, sturz: 210, label: "Fenster 100cm" }], objekte: []
+                                },
+                                { id: "W-03", name: "Ostwand", breite: 360, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] },
+                                { id: "W-04", name: "Südwand", breite: 340, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] }
+                            ]
+                        },
+                        {
+                            id: "OG1.03", name: "Elternschlafzimmer", typ: "schlafen",
+                            breite: 500, tiefe: 300, hoehe: 248,
+                            polygon: [{ x: 40, y: 240 }, { x: 380, y: 240 }, { x: 380, y: 380 }, { x: 40, y: 380 }],
+                            waende: [
+                                {
+                                    id: "W-01", name: "Nordwand (Tür zum Flur)", breite: 500, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 60, breite: 85, bruestung: 0, sturz: 210, label: "Tür Flur", oeffnung: "rechts" }], objekte: []
+                                },
+                                {
+                                    id: "W-02", name: "Ostwand (zu Bad)", breite: 300, hoehe: 248, hatTuer: true,
+                                    sperrzonen: [{ typ: "tuer", x: 60, breite: 80, bruestung: 0, sturz: 210, label: "Tür Bad", oeffnung: "links" }], objekte: []
+                                },
+                                {
+                                    id: "W-03", name: "Südwand (Außen)", breite: 500, hoehe: 248, hatTuer: false,
+                                    sperrzonen: [
+                                        { typ: "fenster", x: 80, breite: 140, bruestung: 90, sturz: 210, label: "Fenster 140cm" },
+                                        { typ: "fenster", x: 300, breite: 100, bruestung: 90, sturz: 210, label: "Fenster 100cm" }
+                                    ], objekte: []
+                                },
+                                { id: "W-04", name: "Westwand", breite: 300, hoehe: 248, hatTuer: false, sperrzonen: [], objekte: [] }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const MATERIAL = [
+            { id: "R01", kat: "Rohre", name: "Kupferrohr 12mm", din: "DIN EN 1057", farbe: "#e84545", typ: "rohr_gerade", dn: 12, lagerort: "Regal A1", bestand: 30, einheit: "m" },
+            { id: "R02", kat: "Rohre", name: "Kupferrohr 15mm", din: "DIN EN 1057", farbe: "#e84545", typ: "rohr_gerade", dn: 15, lagerort: "Regal A2", bestand: 25, einheit: "m" },
+            { id: "R03", kat: "Rohre", name: "Kupferrohr 22mm", din: "DIN EN 1057", farbe: "#c0392b", typ: "rohr_gerade", dn: 22, lagerort: "Regal B3", bestand: 12, einheit: "m" },
+            { id: "R04", kat: "Rohre", name: "Kupferrohr 28mm", din: "DIN EN 1057", farbe: "#c0392b", typ: "rohr_gerade", dn: 28, lagerort: "Regal B4", bestand: 8, einheit: "m" },
+            { id: "R05", kat: "Rohre", name: "Verbundrohr 16mm", din: "DIN EN ISO 21003", farbe: "#e67e22", typ: "rohr_gerade", dn: 16, lagerort: "Regal C1", bestand: 50, einheit: "m" },
+            { id: "R06", kat: "Rohre", name: "Verbundrohr 20mm", din: "DIN EN ISO 21003", farbe: "#e67e22", typ: "rohr_gerade", dn: 20, lagerort: "Regal C2", bestand: 40, einheit: "m" },
+            { id: "F01", kat: "Formteile", name: "Winkel 90° DN22", din: "DIN EN 1254-1", farbe: "#e84545", typ: "winkel", dn: 22, lagerort: "Regal A5", bestand: 20, einheit: "Stk" },
+            { id: "F02", kat: "Formteile", name: "Winkel 45° DN22", din: "DIN EN 1254-1", farbe: "#e84545", typ: "winkel", dn: 22, lagerort: "Regal A5", bestand: 15, einheit: "Stk" },
+            { id: "F03", kat: "Formteile", name: "T-Stück DN22", din: "DIN EN 1254-1", farbe: "#e84545", typ: "t-stueck", dn: 22, lagerort: "Regal A6", bestand: 10, einheit: "Stk" },
+            { id: "F04", kat: "Formteile", name: "Kugelhahn DN22", din: "DIN EN 13828", farbe: "#8e44ad", typ: "ventil", dn: 22, lagerort: "Regal E1", bestand: 6, einheit: "Stk" },
+            { id: "F05", kat: "Formteile", name: "Thermostatventil DN15", din: "DIN EN 215", farbe: "#8e44ad", typ: "ventil", dn: 15, lagerort: "Regal E2", bestand: 12, einheit: "Stk" },
+            { id: "H01", kat: "Heizflächen", name: "Heizkörper Flach 600×800", din: "DIN EN 442", farbe: "#2980b9", typ: "heizkoerper", dn: 22, lagerort: "Lager F-1", bestand: 3, einheit: "Stk" },
+            { id: "H02", kat: "Heizflächen", name: "Badheizkörper 1800×600", din: "DIN EN 442", farbe: "#2980b9", typ: "heizkoerper", dn: 22, lagerort: "Lager F-2", bestand: 2, einheit: "Stk" },
+            { id: "H03", kat: "Heizflächen", name: "FBH-Verteiler 4-Kreis", din: "DIN EN 1264", farbe: "#16a085", typ: "fbh", dn: 20, lagerort: "Regal G1", bestand: 2, einheit: "Stk" },
+            { id: "T01", kat: "Technik", name: "Umwälzpumpe", din: "–", farbe: "#2c3e50", typ: "pumpe", dn: 32, lagerort: "Lager H", bestand: 1, einheit: "Stk" },
+            { id: "T02", kat: "Technik", name: "Ausdehnungsgefäß 18L", din: "DIN 4807", farbe: "#2c3e50", typ: "sonstiges", dn: 0, lagerort: "Lager H", bestand: 2, einheit: "Stk" }
+        ];
+
+        /* ═══════════════════════════════════════════════
+           STATE
+        ═══════════════════════════════════════════════ */
+        const S = {
+            fach: null, aktStock: null, aktRaum: null, aktWand: null,
+            tool: 'rohr_gerade', aktMat: null,
+            objekte: [], undoStack: [],
+            riegelObenPct: 30, riegelUntenPct: 15,
+            vollbild: false
+        };
+
+        /* ═══════════════════════════════════════════════
+           NAVIGATION
+        ═══════════════════════════════════════════════ */
+        function zeigeView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        const BADGES = {
+            heizung: '🔥 Heizung', elektro: '⚡ Elektro',
+            sanitaer: '💧 Sanitär', sonstiges: '🔧 Sonstiges'
+        };
+        const BADGE_CLS = { heizung: '', elektro: 'elektro', sanitaer: 'sanitaer', sonstiges: '' };
+
+        function setzeBadges() {
+            ['badge-gr', 'badge-raum', 'badge-wand'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = BADGES[S.fach] || '';
+                    el.className = 'fach-badge ' + (BADGE_CLS[S.fach] || '');
+                }
+            });
+        }
+
+        function wahleFach(fb, el) {
+            document.querySelectorAll('.fach-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            S.fach = fb;
+            document.getElementById('btn-weiter').disabled = false;
+        }
+
+        function zeigeGrundriss() {
+            if (!S.fach) return;
+            S.aktStock = PROJEKT.stockwerke[1]; // EG default
+            setzeBadges();
+            baueStockTabs();
+            baueGrundriss();
+            zeigeView('view-grundriss');
+        }
+
+        /* ═══════════════════════════════════════════════
+           GRUNDRISS
+        ═══════════════════════════════════════════════ */
+        // Raumfarben nach Typ
+        const RAUM_FARBEN = {
+            wohnen: 'rgba(26,115,232,.08)',
+            kueche: 'rgba(232,162,26,.1)',
+            bad: 'rgba(69,168,69,.1)',
+            schlafen: 'rgba(138,43,226,.07)',
+            flur: 'rgba(108,117,125,.08)',
+            treppe: 'rgba(108,117,125,.12)',
+            technik: 'rgba(232,69,69,.07)',
+            default: 'rgba(26,115,232,.06)'
+        };
+        const RAUM_ICONS = {
+            wohnen: '🛋', kueche: '🍳', bad: '🚿',
+            schlafen: '🛏', flur: '🚶', treppe: '🪜',
+            technik: '⚙️', default: '📐'
+        };
+
+        function baueStockTabs() {
+            const c = document.getElementById('stock-tabs');
+            c.innerHTML = '';
+            PROJEKT.stockwerke.forEach(s => {
+                const b = document.createElement('button');
+                b.className = 'stab' + (s.id === S.aktStock.id ? ' active' : '');
+                b.textContent = s.id;
+                b.onclick = () => waehleStock(s);
+                c.appendChild(b);
+            });
+        }
+
+        function waehleStock(s) {
+            S.aktStock = s;
+            document.getElementById('bc-stock').textContent = s.id;
+            baueStockTabs();
+            baueGrundriss();
+        }
+
+        function baueGrundriss() {
+            const svg = document.getElementById('grundriss-svg');
+            svg.innerHTML = '';
+
+            // Gitter
+            for (let x = 0; x <= 580; x += 20) {
+                const l = mkSVG('line', { x1: x, y1: 0, x2: x, y2: 430, stroke: '#eef0f5', 'stroke-width': '0.5' });
+                svg.appendChild(l);
+            }
+            for (let y = 0; y <= 430; y += 20) {
+                const l = mkSVG('line', { x1: 0, y1: y, x2: 580, y2: y, stroke: '#eef0f5', 'stroke-width': '0.5' });
+                svg.appendChild(l);
+            }
+
+            S.aktStock.raeume.forEach(raum => {
+                const p = raum.polygon;
+                const pts = p.map(pt => `${pt.x},${pt.y}`).join(' ');
+                const fill = RAUM_FARBEN[raum.typ] || RAUM_FARBEN.default;
+
+                // Raumfläche
+                const poly = mkSVG('polygon', {
+                    points: pts, fill,
+                    stroke: raum.typ === 'flur' ? '#888' : (raum.typ === 'treppe' ? '#666' : '#334'),
+                    'stroke-width': '2.5',
+                    style: 'cursor:pointer'
+                });
+                poly.addEventListener('click', () => oeffneRaum(raum));
+                poly.addEventListener('touchend', (e) => { e.preventDefault(); oeffneRaum(raum); });
+                svg.appendChild(poly);
+
+                // Treppenhaus Striche
+                if (raum.typ === 'treppe') {
+                    const minX = Math.min(...p.map(pt => pt.x));
+                    const maxX = Math.max(...p.map(pt => pt.x));
+                    const minY = Math.min(...p.map(pt => pt.y));
+                    const maxY = Math.max(...p.map(pt => pt.y));
+                    for (let i = 0; i < 6; i++) {
+                        const yy = minY + (maxY - minY) * (i + 1) / 7;
+                        const l = mkSVG('line', {
+                            x1: minX + 4, y1: yy, x2: maxX - 4, y2: yy,
+                            stroke: '#888', 'stroke-width': '1.5', 'stroke-dasharray': '4,2'
+                        });
+                        svg.appendChild(l);
+                    }
+                }
+
+                // Wände mit Türen/Fenstern
+                p.forEach((pt, i) => {
+                    const pt2 = p[(i + 1) % p.length];
+                    const wand = raum.waende[i];
+                    if (!wand) return;
+                    zeichneWandGrundriss(svg, pt, pt2, wand, raum);
+                });
+
+                // Icon + Label
+                const cx = p.reduce((s, pt) => s + pt.x, 0) / p.length;
+                const cy = p.reduce((s, pt) => s + pt.y, 0) / p.length;
+                const icon = RAUM_ICONS[raum.typ] || RAUM_ICONS.default;
+
+                const t1 = mkSVG('text', {
+                    x: cx, y: cy - 6, 'text-anchor': 'middle',
+                    'font-size': '10', 'font-weight': '700', fill: '#1e2532',
+                    'pointer-events': 'none'
+                });
+                t1.textContent = raum.name;
+                svg.appendChild(t1);
+
+                const t2 = mkSVG('text', {
+                    x: cx, y: cy + 9, 'text-anchor': 'middle',
+                    'font-size': '8', fill: '#6b7a99', 'pointer-events': 'none'
+                });
+                t2.textContent = raum.id;
+                svg.appendChild(t2);
+            });
+        }
+
+        function zeichneWandGrundriss(svg, p1, p2, wand, raum) {
+            const dx = p2.x - p1.x, dy = p2.y - p1.y;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            const nx = -dy / len, ny = dx / len; // Normal nach innen
+
+            wand.sperrzonen.forEach(sz => {
+                const t1 = sz.x / wand.breite;
+                const t2 = (sz.x + sz.breite) / wand.breite;
+                const sx1 = p1.x + dx * t1, sy1 = p1.y + dy * t1;
+                const sx2 = p1.x + dx * t2, sy2 = p1.y + dy * t2;
+                const mx = (sx1 + sx2) / 2, my = (sy1 + sy2) / 2;
+
+                if (sz.typ === 'tuer') {
+                    // Türlinie rot
+                    const tl = mkSVG('line', {
+                        x1: sx1, y1: sy1, x2: sx2, y2: sy2,
+                        stroke: '#e84545', 'stroke-width': '4', 'stroke-linecap': 'round'
+                    });
+                    svg.appendChild(tl);
+                    // Öffnungswinkel (Viertelkreis)
+                    const r = sz.breite / wand.breite * len * 0.9;
+                    const oLinks = sz.oeffnung === 'links';
+                    const anchorX = oLinks ? sx1 : sx2;
+                    const anchorY = oLinks ? sy1 : sy2;
+                    const endX = anchorX + nx * r * 8;
+                    const endY = anchorY + ny * r * 8;
+                    // Linie vom Angelpunkt
+                    const al = mkSVG('line', {
+                        x1: anchorX, y1: anchorY, x2: endX, y2: endY,
+                        stroke: '#e84545', 'stroke-width': '1.5',
+                        'stroke-dasharray': '3,2', 'opacity': '.7'
+                    });
+                    svg.appendChild(al);
+                    // Bogen
+                    const arc = mkSVG('path', {
+                        d: `M ${oLinks ? sx2 : sx1} ${oLinks ? sy2 : sy1} Q ${endX} ${endY} ${endX} ${endY}`,
+                        fill: 'none', stroke: '#e84545', 'stroke-width': '1', 'opacity': '.5'
+                    });
+                    svg.appendChild(arc);
+                } else {
+                    // Fenster: 3 parallele Striche (Architektur-Standard)
+                    const off = 5;
+                    for (let i = 0; i < 3; i++) {
+                        const t = i / 2;
+                        const fx1 = sx1 + (sx2 - sx1) * t, fy1 = sy1 + (sy2 - sy1) * t;
+                        if (i === 0 || i === 2) {
+                            // Äußere Striche
+                            const fl = mkSVG('line', {
+                                x1: fx1, y1: fy1,
+                                x2: fx1 + nx * off * 2, y2: fy1 + ny * off * 2,
+                                stroke: '#4a90d9', 'stroke-width': '2'
+                            });
+                            svg.appendChild(fl);
+                        }
+                    }
+                    // Hauptfensterlinie
+                    const fl = mkSVG('line', {
+                        x1: sx1, y1: sy1, x2: sx2, y2: sy2,
+                        stroke: '#4a90d9', 'stroke-width': '3.5'
+                    });
+                    svg.appendChild(fl);
+                    // Mittellinie
+                    const fm = mkSVG('line', {
+                        x1: (sx1 + sx2) / 2, y1: (sy1 + sy2) / 2,
+                        x2: (sx1 + sx2) / 2 + nx * off * 2, y2: (sy1 + sy2) / 2 + ny * off * 2,
+                        stroke: '#4a90d9', 'stroke-width': '1.5', 'opacity': '.6'
+                    });
+                    svg.appendChild(fm);
+                }
+            });
+        }
+
+        /* ═══════════════════════════════════════════════
+           RAUM
+        ═══════════════════════════════════════════════ */
+        const TYP_FARBE = {
+            wohnen: '#1a73e8', kueche: '#e6a21a', bad: '#45a845',
+            schlafen: '#8a2be2', flur: '#6c757d',
+            treppe: '#555', technik: '#e84545', default: '#1a73e8'
+        };
+
+        function oeffneRaum(raum) {
+            S.aktRaum = raum;
+            S.aktWand = null;
+            document.getElementById('bc-raum-stock').textContent = S.aktStock.id;
+            document.getElementById('bc-raum-name').textContent = raum.name;
+            setzeBadges();
+            document.getElementById('raum-name-inp').value = raum.name;
+            // Chips
+            const chips = document.getElementById('raum-chips');
+            chips.innerHTML = `
+    <div class="chip">🆔 ${raum.id}</div>
+    <div class="chip">↔ ${(raum.breite / 100).toFixed(2)} m</div>
+    <div class="chip">↕ ${(raum.tiefe / 100).toFixed(2)} m</div>
+    <div class="chip">🏠 ${(raum.hoehe / 100).toFixed(2)} m</div>
+    <div class="chip">📐 ${(raum.breite * raum.tiefe / 10000).toFixed(1)} m²</div>
+  `;
+            baueWandScroll(raum);
+            baueRaumSVG(raum);
+            zeigeView('view-raum');
+        }
+
+        function baueWandScroll(raum) {
+            const c = document.getElementById('waende-scroll');
+            c.innerHTML = '';
+            raum.waende.forEach(w => {
+                const btn = document.createElement('button');
+                btn.className = 'wand-chip' + (S.aktWand && S.aktWand.id === w.id ? ' selected' : '');
+                const szIcons = w.sperrzonen.map(sz => sz.typ === 'tuer' ? '🚪' : '🪟').join('');
+                const anzahl = w.objekte.length;
+                btn.innerHTML = `
+      <div>
+        <div style="font-size:10px;color:var(--text-light);">${w.id}</div>
+        <div>${w.name.split('(')[0].trim()}</div>
+        ${szIcons ? `<div class="sz-icon">${szIcons}</div>` : ''}
+      </div>
+      ${anzahl > 0 ? `<span class="wc-badge">${anzahl}</span>` : ''}
+    `;
+                btn.onclick = () => oeffneWand(w);
+                c.appendChild(btn);
+            });
+            // + Button
+            const add = document.createElement('button');
+            add.className = 'btn-add-wand';
+            add.textContent = '+ Segment';
+            add.onclick = addWand;
+            c.appendChild(add);
+        }
+
+        function baueRaumSVG(raum, aktWand) {
+            const svg = document.getElementById('raum-svg');
+            svg.innerHTML = '';
+            const pad = 50, W = 400, H = 340;
+            const sc = Math.min((W - pad * 2) / raum.breite, (H - pad * 2) / raum.tiefe);
+            const rw = raum.breite * sc, rh = raum.tiefe * sc;
+            const ox = (W - rw) / 2, oy = (H - rh) / 2;
+            const farbe = TYP_FARBE[raum.typ] || TYP_FARBE.default;
+
+            // Hintergrund
+            const bg = mkSVG('rect', {
+                x: ox, y: oy, width: rw, height: rh,
+                fill: RAUM_FARBEN[raum.typ] || RAUM_FARBEN.default, rx: '4'
+            });
+            svg.appendChild(bg);
+
+            // Maßlinie oben
+            pfeilLinie(svg, ox, oy - 22, ox + rw, oy - 22, '#6b7a99', `${(raum.breite / 100).toFixed(2)} m`);
+            pfeilLinie(svg, ox - 28, oy, ox - 28, oy + rh, '#6b7a99', `${(raum.tiefe / 100).toFixed(2)} m`, true);
+
+            // Wände
+            const seiten = [
+                { x1: ox, y1: oy + rh, x2: ox + rw, y2: oy + rh, idx: 0, nx: 0, ny: 1 },   // Süd → W-01 (Tür)
+                { x1: ox, y1: oy, x2: ox, y2: oy + rh, idx: 1, nx: -1, ny: 0 },          // West
+                { x1: ox, y1: oy, x2: ox + rw, y2: oy, idx: 2, nx: 0, ny: -1 },          // Nord
+                { x1: ox + rw, y1: oy, x2: ox + rw, y2: oy + rh, idx: 3, nx: 1, ny: 0 }     // Ost
+            ];
+
+            // Aber W-01 = Tür-Wand → finde die Wand mit Tür
+            // Wand-Reihenfolge: W-01 hat hatTuer=true → im Uhrzeigersinn ab dieser Wand
+            seiten.forEach(({ x1, y1, x2, y2, idx, nx, ny }) => {
+                const wand = raum.waende[idx];
+                if (!wand) return;
+                const isAkt = aktWand && aktWand.id === wand.id;
+                const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                const dx = x2 - x1, dy = y2 - y1;
+
+                // Wand-Linie
+                const line = mkSVG('line', {
+                    x1, y1, x2, y2,
+                    stroke: isAkt ? farbe : '#334',
+                    'stroke-width': isAkt ? '5' : '3',
+                    style: 'cursor:pointer'
+                });
+                line.addEventListener('click', () => oeffneWand(wand));
+                line.addEventListener('touchend', (e) => { e.preventDefault(); oeffneWand(wand); });
+                svg.appendChild(line);
+
+                // Sperrzonen
+                wand.sperrzonen.forEach(sz => {
+                    const t1 = sz.x / wand.breite, t2 = (sz.x + sz.breite) / wand.breite;
+                    const sx1 = x1 + dx * t1, sy1 = y1 + dy * t1;
+                    const sx2 = x1 + dx * t2, sy2 = y1 + dy * t2;
+
+                    if (sz.typ === 'tuer') {
+                        // Rote Türlinie
+                        const tl = mkSVG('line', {
+                            x1: sx1, y1: sy1, x2: sx2, y2: sy2,
+                            stroke: '#e84545', 'stroke-width': '5', 'stroke-linecap': 'round'
+                        });
+                        svg.appendChild(tl);
+                        // Öffnungswinkel
+                        const r = Math.min(sz.breite / wand.breite * len, 40);
+                        const oLinks = sz.oeffnung === 'links';
+                        const ax = oLinks ? sx1 : sx2, ay = oLinks ? sy1 : sy2;
+                        const endX = ax + nx * r, endY = ay + ny * r;
+                        const arcX = oLinks ? sx2 + nx * r : sx1 + nx * r;
+                        const arcY = oLinks ? sy2 + ny * r : sy1 + ny * r;
+                        // Scharnierarm
+                        const arm = mkSVG('line', {
+                            x1: ax, y1: ay, x2: ax + nx * r, y2: ay + ny * r,
+                            stroke: '#e84545', 'stroke-width': '2'
+                        });
+                        svg.appendChild(arm);
+                        // Bogen
+                        const sweep = oLinks ? 0 : 1;
+                        const arc = mkSVG('path', {
+                            d: `M ${oLinks ? sx2 : sx1} ${oLinks ? sy2 : sy1} A ${r} ${r} 0 0 ${sweep} ${ax + nx * r} ${ay + ny * r}`,
+                            fill: 'rgba(232,69,69,.1)', stroke: '#e84545', 'stroke-width': '1.5'
+                        });
+                        svg.appendChild(arc);
+                    } else {
+                        // Fenster: 3 parallele Striche
+                        const fl = mkSVG('line', {
+                            x1: sx1, y1: sy1, x2: sx2, y2: sy2,
+                            stroke: '#4a90d9', 'stroke-width': '4'
+                        });
+                        svg.appendChild(fl);
+                        // 2 senkrechte Endstriche
+                        const off = 8;
+                        [[sx1, sy1], [sx2, sy2]].forEach(([fx, fy]) => {
+                            const es = mkSVG('line', {
+                                x1: fx - ny * off / 2, y1: fy + nx * off / 2,
+                                x2: fx + ny * off / 2, y2: fy - nx * off / 2,
+                                stroke: '#4a90d9', 'stroke-width': '3'
+                            });
+                            svg.appendChild(es);
+                        });
+                        // Mittellinie
+                        const mid = mkSVG('line', {
+                            x1: (sx1 + sx2) / 2 - ny * off / 2, y1: (sy1 + sy2) / 2 + nx * off / 2,
+                            x2: (sx1 + sx2) / 2 + ny * off / 2, y2: (sy1 + sy2) / 2 - nx * off / 2,
+                            stroke: '#4a90d9', 'stroke-width': '2'
+                        });
+                        svg.appendChild(mid);
+                    }
+                });
+
+                // Wandlabel
+                const lx = (x1 + x2) / 2 + nx * 18, ly = (y1 + y2) / 2 + ny * 18;
+                const lt = mkSVG('text', {
+                    x: lx, y: ly, 'text-anchor': 'middle',
+                    'dominant-baseline': 'middle',
+                    'font-size': '9', 'font-weight': '600',
+                    fill: isAkt ? farbe : '#6b7a99',
+                    style: 'cursor:pointer;'
+                });
+                lt.textContent = wand.id;
+                lt.addEventListener('click', () => oeffneWand(wand));
+                lt.addEventListener('touchend', (e) => { e.preventDefault(); oeffneWand(wand); });
+                svg.appendChild(lt);
+            });
+
+            // Raumicon
+            const t = mkSVG('text', {
+                x: ox + rw / 2, y: oy + rh / 2, 'text-anchor': 'middle',
+                'font-size': '22', 'pointer-events': 'none'
+            });
+            t.textContent = RAUM_ICONS[raum.typ] || RAUM_ICONS.default;
+            svg.appendChild(t);
+        }
+
+        function pfeilLinie(svg, x1, y1, x2, y2, farbe, label, vertikal) {
+            const l = mkSVG('line', { x1, y1, x2, y2, stroke: farbe, 'stroke-width': '1' });
+            svg.appendChild(l);
+            const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+            const t = mkSVG('text', {
+                x: mx, y: my, 'text-anchor': 'middle',
+                'dominant-baseline': 'middle', 'font-size': '9', fill: farbe,
+                transform: vertikal ? `rotate(-90,${mx},${my})` : '',
+                'font-weight': '600'
+            });
+            t.textContent = label;
+            svg.appendChild(t);
+        }
+
+        function aktualisiereRaumname() {
+            if (S.aktRaum) S.aktRaum.name = document.getElementById('raum-name-inp').value;
+        }
+
+        function addWand() {
+            const name = prompt('Segmentname (z.B. "Nische links"):');
+            if (!name) return;
+            const breite = parseInt(prompt('Breite in cm:') || '300');
+            const hoehe = parseInt(prompt('Höhe in cm:') || '248');
+            S.aktRaum.waende.push({
+                id: `W-0${S.aktRaum.waende.length + 1}`,
+                name, breite, hoehe, hatTuer: false, sperrzonen: [], objekte: []
+            });
+            baueWandScroll(S.aktRaum);
+            toast('✓ Segment hinzugefügt');
+        }
+
+        /* ═══════════════════════════════════════════════
+           WAND
+        ═══════════════════════════════════════════════ */
+        function oeffneWand(wand) {
+            S.aktWand = wand;
+            S.objekte = [...wand.objekte];
+            S.undoStack = [];
+            document.getElementById('bc-wand-raum').textContent = S.aktRaum.name;
+            document.getElementById('bc-wand-name').textContent = wand.name;
+            setzeBadges();
+            // Schieberegler
+            const sl_b = document.getElementById('sl-breite');
+            sl_b.max = Math.max(wand.breite + 200, 800);
+            sl_b.value = wand.breite;
+            document.getElementById('vBreite').textContent = wand.breite;
+            document.getElementById('sl-hoehe').value = wand.hoehe;
+            document.getElementById('vHoehe').textContent = wand.hoehe;
+
+            ladeMat();
+            ladeVerbaut();
+            baueTools();
+            zeigePanel('verbaut');
+            updateSkala();
+            // Raum-SVG aktualisieren mit aktiver Wand
+            baueRaumSVG(S.aktRaum, wand);
+            zeigeView('view-wand');
+        }
+
+        /* ═══════════════════════════════════════════════
+           CANVAS & SKALA
+        ═══════════════════════════════════════════════ */
+        const PX = 2.0, RAND = 40;
+
+        function updateSkala() {
+            const b = parseInt(document.getElementById('sl-breite').value);
+            const h = parseInt(document.getElementById('sl-hoehe').value);
+            document.getElementById('vBreite').textContent = b;
+            document.getElementById('vHoehe').textContent = h;
+            const r = b <= 500 ? 10 : b <= 1500 ? 20 : 50;
+            document.getElementById('raster-info').textContent = `${r} cm/Kästchen`;
+            zeichneCanvas(b, h, r);
+            // Riegel-Labels
+            aktualisiereRiegelLabel('oben', b);
+            aktualisiereRiegelLabel('unten', b);
+        }
+
+        function aktualisiereRiegelLabel(seite, breite) {
+            const pct = seite === 'oben' ? S.riegelObenPct : S.riegelUntenPct;
+            const cm = Math.round(pct / 100 * breite);
+            const label = document.getElementById(`riegel-${seite}-label`);
+            if (label) {
+                label.textContent = seite === 'oben' ? `Tiefe: ${Math.round(pct / 3)} cm` : `Höhe: ${cm} cm`;
+                label.style.left = `calc(${pct}% + 6px)`;
+            }
+            const line = document.getElementById(`riegel-${seite}`);
+            if (line) line.style.left = pct + '%';
+        }
+
+        function zeichneCanvas(wandB, wandH, rasterCm) {
+            const canvas = document.getElementById('wand-canvas');
+            const ctx = canvas.getContext('2d');
+            const cw = wandB * PX + RAND * 2;
+            const ch = wandH * PX + RAND * 2;
+            canvas.width = cw; canvas.height = ch;
+            ctx.clearRect(0, 0, cw, ch);
+
+            // Außen
+            ctx.fillStyle = '#e8ecf3';
+            ctx.fillRect(0, 0, cw, ch);
+            // Wandfläche
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(RAND, RAND, wandB * PX, wandH * PX);
+
+            // Raster
+            const rPx = rasterCm * PX;
+            ctx.strokeStyle = '#dde3ed'; ctx.lineWidth = 0.5;
+            for (let x = 0; x <= wandB * PX; x += rPx) {
+                ctx.beginPath(); ctx.moveTo(RAND + x, RAND); ctx.lineTo(RAND + x, RAND + wandH * PX); ctx.stroke();
+            }
+            for (let y = 0; y <= wandH * PX; y += rPx) {
+                ctx.beginPath(); ctx.moveTo(RAND, RAND + y); ctx.lineTo(RAND + wandB * PX, RAND + y); ctx.stroke();
+            }
+
+            // Wandrahmen
+            ctx.strokeStyle = '#334'; ctx.lineWidth = 3;
+            ctx.strokeRect(RAND, RAND, wandB * PX, wandH * PX);
+
+            // Skala unten
+            ctx.fillStyle = '#6b7a99'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+            const step = rasterCm * 5;
+            for (let x = 0; x <= wandB; x += step) {
+                const px = RAND + x * PX;
+                ctx.fillText(x + 'cm', px, ch - 6);
+                ctx.beginPath(); ctx.strokeStyle = '#6b7a99'; ctx.lineWidth = 1;
+                ctx.moveTo(px, RAND + wandH * PX); ctx.lineTo(px, RAND + wandH * PX + 5); ctx.stroke();
+            }
+            // Skala links
+            ctx.textAlign = 'right';
+            for (let y = 0; y <= wandH; y += step) {
+                const py = RAND + y * PX;
+                ctx.fillText(y + 'cm', RAND - 4, py + 4);
+            }
+
+            // Riegel-Linien auf Canvas
+            const obenX = RAND + (S.riegelObenPct / 100) * wandB * PX;
+            const untenX = RAND + (S.riegelUntenPct / 100) * wandB * PX;
+            // Oben (Verlegetiefe) – gestrichelt blau oben
+            ctx.save();
+            ctx.strokeStyle = 'rgba(26,115,232,.5)';
+            ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+            ctx.beginPath(); ctx.moveTo(obenX, RAND); ctx.lineTo(obenX, RAND + wandH * PX); ctx.stroke();
+            ctx.restore();
+            // Unten (Verlegehöhe) – gestrichelt grün
+            ctx.save();
+            ctx.strokeStyle = 'rgba(39,174,96,.6)';
+            ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+            ctx.beginPath(); ctx.moveTo(RAND, RAND + (S.riegelUntenPct / 100) * wandH * PX);
+            ctx.lineTo(RAND + wandB * PX, RAND + (S.riegelUntenPct / 100) * wandH * PX); ctx.stroke();
+            ctx.restore();
+
+            // Sperrzonen
+            if (S.aktWand) {
+                S.aktWand.sperrzonen.forEach(sz => {
+                    const sx = RAND + sz.x * PX;
+                    const sw = sz.breite * PX;
+                    // Brüstung und Sturz beachten!
+                    const sbY = RAND + (sz.bruestung || 0) * PX;
+                    const seY = RAND + (sz.sturz || wandH) * PX;
+                    const sh = seY - sbY;
+
+                    // Sperrbereich (nur zwischen Brüstung und Sturz)
+                    ctx.fillStyle = sz.typ === 'tuer' ? 'rgba(232,69,69,.1)' : 'rgba(74,144,217,.12)';
+                    ctx.fillRect(sx, sbY, sw, sh);
+
+                    // Rahmen
+                    ctx.strokeStyle = sz.typ === 'tuer' ? '#e84545' : '#4a90d9';
+                    ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+                    ctx.strokeRect(sx, sbY, sw, sh);
+                    ctx.setLineDash([]);
+
+                    if (sz.typ === 'fenster') {
+                        // 3 parallele Fensterstrichsymbole
+                        const fMitte = (sbY + seY) / 2;
+                        ctx.strokeStyle = '#4a90d9'; ctx.lineWidth = 2;
+                        ctx.beginPath(); ctx.moveTo(sx, fMitte); ctx.lineTo(sx + sw, fMitte); ctx.stroke();
+                        ctx.lineWidth = 1.5;
+                        // linker Endstrich
+                        ctx.beginPath(); ctx.moveTo(sx, sbY); ctx.lineTo(sx, seY); ctx.stroke();
+                        // rechter Endstrich
+                        ctx.beginPath(); ctx.moveTo(sx + sw, sbY); ctx.lineTo(sx + sw, seY); ctx.stroke();
+                        // Brüstung-Linie
+                        ctx.strokeStyle = 'rgba(74,144,217,.4)'; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+                        ctx.beginPath(); ctx.moveTo(RAND, sbY); ctx.lineTo(RAND + wandB * PX, sbY); ctx.stroke();
+                        ctx.setLineDash([]);
+                    } else {
+                        // Tür: Bogen
+                        const tr = Math.min(sw * 0.9, 60 * PX);
+                        const oLinks = sz.oeffnung === 'links';
+                        const ax = oLinks ? sx : sx + sw;
+                        ctx.strokeStyle = '#e84545'; ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.arc(ax, seY, tr, oLinks ? -Math.PI / 2 : Math.PI + Math.PI / 2, -Math.PI / 2, oLinks);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(ax, seY);
+                        ctx.lineTo(ax + (oLinks ? tr : -tr), seY);
+                        ctx.stroke();
+                    }
+
+                    // Label
+                    ctx.fillStyle = sz.typ === 'tuer' ? '#e84545' : '#4a90d9';
+                    ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+                    ctx.fillText((sz.typ === 'tuer' ? '🚪 ' : '🪟 ') + sz.label, sx + sw / 2, sbY - 4);
+                    if (sz.bruestung) {
+                        ctx.font = '8px sans-serif'; ctx.fillStyle = '#6b7a99';
+                        ctx.fillText(`${sz.bruestung}cm`, sx + sw / 2, sbY + 11);
+                    }
+                });
+            }
+
+            // Objekte zeichnen
+            S.objekte.forEach(obj => zeichneObj(ctx, obj));
+        }
+
+        function zeichneObj(ctx, obj) {
+            const x = RAND + obj.x * PX, y = RAND + obj.y * PX;
+            ctx.save();
+            switch (obj.typ) {
+                case 'rohr_gerade':
+                    ctx.strokeStyle = obj.farbe || '#e84545';
+                    ctx.lineWidth = Math.max(3, obj.dn / 4);
+                    ctx.lineCap = 'round';
+                    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (obj.laenge || 100) * PX, y); ctx.stroke();
+                    ctx.fillStyle = obj.farbe || '#e84545';
+                    ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+                    ctx.fillText(`DN${obj.dn}`, x + (obj.laenge || 100) * PX / 2, y - 6);
+                    break;
+                case 'winkel':
+                    ctx.strokeStyle = obj.farbe || '#e84545';
+                    ctx.lineWidth = Math.max(3, obj.dn / 4); ctx.lineCap = 'round';
+                    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 30 * PX, y);
+                    ctx.moveTo(x, y); ctx.lineTo(x, y + 30 * PX); ctx.stroke();
+                    ctx.fillStyle = obj.farbe || '#e84545';
+                    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+                    break;
+                case 't-stueck':
+                    ctx.strokeStyle = obj.farbe || '#e84545';
+                    ctx.lineWidth = Math.max(3, obj.dn / 4); ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(x - 20 * PX, y); ctx.lineTo(x + 20 * PX, y);
+                    ctx.moveTo(x, y); ctx.lineTo(x, y + 20 * PX); ctx.stroke();
+                    ctx.fillStyle = obj.farbe || '#e84545';
+                    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+                    break;
+                case 'heizkoerper':
+                    ctx.fillStyle = 'rgba(41,128,185,.1)'; ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 2;
+                    ctx.fillRect(x, y, 80 * PX, 40 * PX); ctx.strokeRect(x, y, 80 * PX, 40 * PX);
+                    for (let r = 10; r < 80; r += 10) {
+                        ctx.beginPath(); ctx.moveTo(x + r * PX, y); ctx.lineTo(x + r * PX, y + 40 * PX); ctx.stroke();
+                    }
+                    ctx.fillStyle = '#2980b9'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+                    ctx.fillText('HK', x + 40 * PX, y + 25 * PX);
+                    break;
+                case 'fbh':
+                    ctx.strokeStyle = '#16a085'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+                    for (let row = 0; row < 4; row++) {
+                        ctx.beginPath(); ctx.moveTo(x, y + row * 10 * PX); ctx.lineTo(x + 60 * PX, y + row * 10 * PX); ctx.stroke();
+                    }
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = '#16a085'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+                    ctx.fillText('FBH', x + 30 * PX, y - 5);
+                    break;
+                case 'pumpe':
+                    ctx.fillStyle = 'rgba(44,62,80,.1)'; ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(x, y, 18 * PX, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#2c3e50'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+                    ctx.fillText('P', x, y + 4);
+                    break;
+                case 'ventil':
+                    ctx.fillStyle = 'rgba(142,68,173,.15)'; ctx.strokeStyle = '#8e44ad'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(x, y, 10 * PX, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#8e44ad'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+                    ctx.fillText('V', x, y + 4);
+                    break;
+            }
+            ctx.restore();
+        }
+
+        /* ═══════════════════════════════════════════════
+           CANVAS INTERAKTION
+        ═══════════════════════════════════════════════ */
+        function canvasKlick(e) {
+            const canvas = document.getElementById('wand-canvas');
+            const r = canvas.getBoundingClientRect();
+            platziere(e.clientX - r.left, e.clientY - r.top);
+        }
+
+        function canvasTouchEnd(e) {
+            e.preventDefault();
+            const canvas = document.getElementById('wand-canvas');
+            const r = canvas.getBoundingClientRect();
+            const t = e.changedTouches[0];
+            platziere(t.clientX - r.left, t.clientY - r.top);
+        }
+
+        function platziere(px, py) {
+            const wandB = parseInt(document.getElementById('sl-breite').value);
+            const wandH = parseInt(document.getElementById('sl-hoehe').value);
+            if (px < RAND || px > RAND + wandB * PX || py < RAND || py > RAND + wandH * PX) return;
+
+            const cx = (px - RAND) / PX, cy = (py - RAND) / PX;
+            const rasterCm = wandB <= 500 ? 10 : wandB <= 1500 ? 20 : 50;
+            const snapX = Math.round(cx / rasterCm) * rasterCm;
+            const snapY = Math.round(cy / rasterCm) * rasterCm;
+
+            if (S.tool === 'loeschen') {
+                const idx = S.objekte.findIndex(o => Math.abs(cx - o.x) < 40 && Math.abs(cy - o.y) < 30);
+                if (idx !== -1) {
+                    S.undoStack.push([...S.objekte]);
+                    S.objekte.splice(idx, 1);
+                    sync(); toast('🗑️ Entfernt');
+                }
+                return;
+            }
+
+            // Sperrzone prüfen
+            const inSz = S.aktWand.sperrzonen.some(sz =>
+                cx >= sz.x && cx <= sz.x + sz.breite &&
+                cy >= (sz.bruestung || 0) && cy <= (sz.sturz || wandH)
+            );
+            if (inSz) {
+                if (!confirm('⚠️ Sperrzone!\nTrotzdem verlegen?')) return;
+            }
+
+            const mat = S.aktMat;
+            const dn = parseInt(document.getElementById('dn-select').value);
+            const obj = {
+                id: `O-${Date.now()}`,
+                typ: S.tool,
+                dn: mat ? mat.dn : dn,
+                din: mat ? mat.din : 'DIN EN 1057',
+                name: mat ? mat.name : `${S.tool} DN${dn}`,
+                x: snapX, y: snapY, laenge: 100,
+                farbe: mat ? mat.farbe : '#e84545',
+                lagerort: mat ? { regal: mat.lagerort, bestand: mat.bestand, einheit: mat.einheit } : { regal: '', bestand: 0, einheit: 'Stk' }
+            };
+            S.undoStack.push([...S.objekte]);
+            S.objekte.push(obj);
+            sync();
+            toast(`✓ ${obj.name} @ ${snapX}/${snapY} cm`);
+        }
+
+        function sync() {
+            S.aktWand.objekte = [...S.objekte];
+            ladeVerbaut();
+            updateSkala();
+            baueWandScroll(S.aktRaum);
+        }
+
+        function undo() {
+            if (!S.undoStack.length) { toast('Nichts rückgängig'); return; }
+            S.objekte = S.undoStack.pop();
+            sync(); toast('↩ Rückgängig');
+        }
+
+        /* ═══════════════════════════════════════════════
+           RIEGEL
+        ═══════════════════════════════════════════════ */
+        let riegelAktiv = null, riegelStartX = 0, riegelStartPct = 0;
+
+        function startRiegel(seite, e) {
+            e.preventDefault();
+            riegelAktiv = seite;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            riegelStartX = clientX;
+            riegelStartPct = seite === 'oben' ? S.riegelObenPct : S.riegelUntenPct;
+
+            document.addEventListener('mousemove', moveRiegel);
+            document.addEventListener('touchmove', moveRiegel, { passive: false });
+            document.addEventListener('mouseup', stopRiegel);
+            document.addEventListener('touchend', stopRiegel);
+        }
+
+        function moveRiegel(e) {
+            if (!riegelAktiv) return;
+            e.preventDefault();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const bar = document.getElementById(`riegel-${riegelAktiv}-bar`);
+            const barW = bar.getBoundingClientRect().width;
+            const delta = (clientX - riegelStartX) / barW * 100;
+            let newPct = Math.max(2, Math.min(98, riegelStartPct + delta));
+            if (riegelAktiv === 'oben') S.riegelObenPct = newPct;
+            else S.riegelUntenPct = newPct;
+            const breite = parseInt(document.getElementById('sl-breite').value);
+            aktualisiereRiegelLabel(riegelAktiv, breite);
+            updateSkala();
+        }
+
+        function stopRiegel() {
+            riegelAktiv = null;
+            document.removeEventListener('mousemove', moveRiegel);
+            document.removeEventListener('touchmove', moveRiegel);
+            document.removeEventListener('mouseup', stopRiegel);
+            document.removeEventListener('touchend', stopRiegel);
+        }
+
+        /* ═══════════════════════════════════════════════
+           PANELS (Bottom Drawer)
+        ═══════════════════════════════════════════════ */
+        function zeigePanel(name) {
+            ['verbaut', 'zeichnen', 'material'].forEach(p => {
+                document.getElementById(`panel-${p}`).classList.toggle('active', p === name);
+                document.getElementById(`bnav-${p}`).classList.toggle('active', p === name);
+            });
+        }
+
+        /* ═══════════════════════════════════════════════
+           WERKZEUGE
+        ═══════════════════════════════════════════════ */
+        const TOOLS = [
+            { id: 'rohr_gerade', label: '─ Rohr' },
+            { id: 'winkel', label: '∟ Winkel' },
+            { id: 't-stueck', label: '⊤ T-Stück' },
+            { id: 'heizkoerper', label: '📡 HK' },
+            { id: 'fbh', label: '〰 FBH' },
+            { id: 'pumpe', label: '⚙️ Pumpe' },
+            { id: 'ventil', label: '🔵 Ventil' }
+        ];
+
+        function baueTools() {
+            const row = document.getElementById('tool-row');
+            row.innerHTML = '';
+            TOOLS.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'tool-btn' + (S.tool === t.id ? ' active' : '');
+                btn.id = 'tool-' + t.id;
+                btn.textContent = t.label;
+                btn.onclick = () => wahleTool(t.id, btn);
+                row.appendChild(btn);
+            });
+        }
+
+        function wahleTool(id, btn) {
+            S.tool = id; S.aktMat = null;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            document.querySelectorAll('.mat-item').forEach(i => i.classList.remove('selected'));
+            toast(`Werkzeug: ${id}`);
+        }
+
+        /* ═══════════════════════════════════════════════
+           MATERIAL
+        ═══════════════════════════════════════════════ */
+        function ladeMat() { renderMat(''); }
+        function filterMat() { renderMat(document.getElementById('mat-search').value.toLowerCase()); }
+
+        function renderMat(filter) {
+            const c = document.getElementById('mat-list');
+            c.innerHTML = '';
+            const kats = [...new Set(MATERIAL.map(m => m.kat))];
+            kats.forEach(kat => {
+                const items = MATERIAL.filter(m => m.kat === kat &&
+                    (m.name.toLowerCase().includes(filter) || m.din.toLowerCase().includes(filter)));
+                if (!items.length) return;
+                const kd = document.createElement('div');
+                kd.className = 'mat-kat'; kd.textContent = kat;
+                c.appendChild(kd);
+                items.forEach(mat => {
+                    const d = document.createElement('div');
+                    d.className = 'mat-item' + (S.aktMat?.id === mat.id ? ' selected' : '');
+                    d.innerHTML = `
+        <div class="mat-dot" style="background:${mat.farbe}"></div>
+        <div class="mat-info">
+          <div class="mat-name">${mat.name}</div>
+          <div class="mat-din">${mat.din}</div>
+          <div class="mat-lager">📦 ${mat.lagerort} · ${mat.bestand} ${mat.einheit}</div>
+        </div>`;
+                    d.onclick = () => {
+                        S.aktMat = mat; S.tool = mat.typ;
+                        document.querySelectorAll('.mat-item').forEach(i => i.classList.remove('selected'));
+                        d.classList.add('selected');
+                        // Tool-Btn updaten
+                        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                        const tb = document.getElementById('tool-' + mat.typ);
+                        if (tb) tb.classList.add('active');
+                        toast(`✓ ${mat.name}`);
+                        zeigePanel('zeichnen');
+                    };
+                    c.appendChild(d);
+                });
+            });
+        }
+
+        /* ═══════════════════════════════════════════════
+           VERBAUT
+        ═══════════════════════════════════════════════ */
+        function ladeVerbaut() {
+            const c = document.getElementById('verbaut-list');
+            if (!S.objekte.length) {
+                c.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-light);font-size:13px;">Noch nichts verbaut</div>';
+                return;
+            }
+            c.innerHTML = '';
+            S.objekte.forEach(obj => {
+                const d = document.createElement('div');
+                d.className = 'verbaut-item';
+                const lager = obj.lagerort?.regal ?
+                    `<div class="v-lager">📦 <b>${obj.lagerort.regal}</b> · ${obj.lagerort.bestand || '?'} ${obj.lagerort.einheit || ''}</div>` : '';
+                d.innerHTML = `
+      <div class="v-typ" style="color:${obj.farbe || '#e84545'}">${obj.name} DN${obj.dn}</div>
+      <div class="v-din">${obj.din} · Pos: ${obj.x}/${obj.y} cm</div>
+      ${lager}`;
+                c.appendChild(d);
+            });
+        }
+
+        /* ═══════════════════════════════════════════════
+           VOLLBILD
+        ═══════════════════════════════════════════════ */
+        function oeffneVollbild() {
+            S.vollbild = true;
+            document.getElementById('vb-overlay').classList.add('active');
+            // Tools im Overlay bauen
+            const c = document.getElementById('vb-tools');
+            c.innerHTML = '';
+            TOOLS.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'vb-tool' + (S.tool === t.id ? ' active' : '');
+                btn.textContent = t.label;
+                btn.onclick = () => {
+                    S.tool = t.id; S.aktMat = null;
+                    c.querySelectorAll('.vb-tool').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                };
+                c.appendChild(btn);
+            });
+            toast('⛶ Vollbild-Zeichenmodus');
+        }
+
+        function verlasseVollbild() {
+            S.vollbild = false;
+            document.getElementById('vb-overlay').classList.remove('active');
+            toast('✓ Zurück zur Normalansicht');
+        }
+
+        /* ═══════════════════════════════════════════════
+           SPEECH TO TEXT
+        ═══════════════════════════════════════════════ */
+        function startSpeech(zielId, micId) {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { toast('🎤 Nur in Chrome verfügbar'); return; }
+            const r = new SR();
+            r.lang = 'de-DE'; r.interimResults = false; r.maxAlternatives = 1;
+            const mic = document.getElementById(micId);
+            if (mic) mic.classList.add('listening');
+            toast('🎤 Sprechen Sie jetzt…');
+            r.onresult = e => {
+                const text = e.results[0][0].transcript;
+                const el = document.getElementById(zielId);
+                if (el) el.value = text;
+                if (mic) mic.classList.remove('listening');
+                // Raumname live
+                if (zielId === 'raum-name-inp' && S.aktRaum) S.aktRaum.name = text;
+                toast(`✓ "${text}"`);
+            };
+            r.onerror = () => { if (mic) mic.classList.remove('listening'); toast('❌ Spracheingabe fehlgeschlagen'); };
+            r.onend = () => { if (mic) mic.classList.remove('listening'); };
+            r.start();
+        }
+
+        /* ═══════════════════════════════════════════════
+           TOAST
+        ═══════════════════════════════════════════════ */
+        let toastT;
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(toastT);
+            toastT = setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        /* ═══════════════════════════════════════════════
+           SVG HELPER
+        ═══════════════════════════════════════════════ */
+        function mkSVG(tag, attrs) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+            Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+            return el;
+        }
+
+        /* ═══════════════════════════════════════════════
+           INIT
+        ═══════════════════════════════════════════════ */
+        document.addEventListener('DOMContentLoaded', () => {
+            zeigeView('view-fach');
+        });
+    </script>
+</body>
+
+</html>
