@@ -7,7 +7,7 @@ Dieser Prototyp wurde als Web-App umgesetzt und dient zur Validierung der Kernfu
 
 ---
 
-## 🚀 Kernfunktionen des Prototyps
+##  Kernfunktionen des Prototyps
 
 Der aktuelle Entwicklungsstand zeigt bereits die grundlegende Navigation und die wichtigsten Planungs-Schritte:
 
@@ -45,7 +45,7 @@ Für die finale Version der App sind folgende Erweiterungen vorgesehen
 
 ## ⚠️ Status des Prototyps
 
-> **Hinweis:** Dies ist ein fortlaufendes Projekt ("Work in Progress"). Der Code wurde initial mithilfe von KI-Unterstützung (Claude) generiert, um die Benutzeroberfläche und den Workflow schnell greifbar zu machen. Einige Funktionen sind aktuell noch rein visuelle Platzhalter.
+> **Hinweis:** Dies ist ein fortlaufendes Projekt ("Work in Progress"). Der Code wurde initial mithilfe von KI-Unterstützung (Claude) generiert, um die Benutzeroberfläche und den Workflow schnell greifbar zu machen. Einige Funktionen und Angaben sind aktuell noch fehlerhaft und rein visuelle Platzhalter.
 >
 > <img width="1080" height="1958" alt="1000038340" src="https://github.com/user-attachments/assets/fe285ab3-920c-41fb-8e75-17039c8726e8" />
 <img width="961" height="1988" alt="1000038328" src="https://github.com/user-attachments/assets/033da3c9-03cd-4854-929e-dc78fd2770c8" />
