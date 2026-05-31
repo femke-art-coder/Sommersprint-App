@@ -1,3 +1,4 @@
+Live Vorschau: https://femke-art-coder.github.io/Sommersprint-App/
 # Sommersprint App – Smart-Sanierungs-Assistent (Prototyp)
 
 Die **Sommersprint App** ist ein intuitiver, mobiler Sanierungs-Assistent, der speziell für den Baustellenalltag entwickelt wird. Ziel des Projekts ist es, die Digitalisierungslücke im Handwerk zu schließen und komplexe BIM-Planungsprozesse (Building Information Modeling) so einfach wie ein Zeichentool zu machen – direkt auf dem Smartphone und ohne CAD-Studium.
@@ -44,5 +45,5 @@ Für die finale Version der App sind folgende Erweiterungen vorgesehen
 
 ## ⚠️ Status des Prototyps
 
-> **Hinweis:** Dies ist ein fortlaufendes Projekt ("Work in Progress"). Der Code wurde initial mithilfe von KI-Unterstützung (Claude) generiert, um die Benutzeroberfläche und den Workflow schnell greifbar zu machen. Einige Funktionen sind aktuell noch rein visuelle Platzhalter und werden in kommenden Sprints funktional ausgebaut.
+> **Hinweis:** Dies ist ein fortlaufendes Projekt ("Work in Progress"). Der Code wurde initial mithilfe von KI-Unterstützung (Claude) generiert, um die Benutzeroberfläche und den Workflow schnell greifbar zu machen. Einige Funktionen sind aktuell noch rein visuelle Platzhalter.
 > 
