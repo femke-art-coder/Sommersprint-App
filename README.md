@@ -46,4 +46,16 @@ Für die finale Version der App sind folgende Erweiterungen vorgesehen
 ## ⚠️ Status des Prototyps
 
 > **Hinweis:** Dies ist ein fortlaufendes Projekt ("Work in Progress"). Der Code wurde initial mithilfe von KI-Unterstützung (Claude) generiert, um die Benutzeroberfläche und den Workflow schnell greifbar zu machen. Einige Funktionen sind aktuell noch rein visuelle Platzhalter.
-> 
+>
+> <img width="1080" height="1958" alt="1000038340" src="https://github.com/user-attachments/assets/fe285ab3-920c-41fb-8e75-17039c8726e8" />
+<img width="961" height="1988" alt="1000038328" src="https://github.com/user-attachments/assets/033da3c9-03cd-4854-929e-dc78fd2770c8" />
+<img width="1080" height="1978" alt="1000038333" src="https://github.com/user-attachments/assets/fbd7d8d5-6410-4885-9543-5afab5a70979" />
+<img width="1080" height="1971" alt="1000038342" src="https://github.com/user-attachments/assets/db1d8a94-b737-4bf4-9940-94def942f2d9" />
+<img width="1080" height="1994" alt="1000038341" src="https://github.com/user-attachments/assets/a7a9cd93-7560-48ac-af03-70f5f2b480e3" />
+
+
+
+
+
+
+
