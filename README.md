@@ -66,7 +66,7 @@ Für die finale Version der App sind folgende Erweiterungen vorgesehen
 
 Um die Brückenfunktion zwischen intuitivem Zeichnen und professionellem BIM-Output zu gewährleisten, bildet die App die erfassten Daten intern direkt in einer standardisierten **IFC-Struktur (Industry Foundation Classes)** ab. 
 
-Die Hierarchie und die zugewiesenen Attribute sind wie folgt aufgebaut:
+Die Hierarchie und die zugewiesenen Attribute könnten wie folgt aufgebaut werden:
 
 ```text
 IfcProject ("Sommersprint")
