@@ -34,7 +34,7 @@ Der aktuelle Entwicklungsstand zeigt bereits die grundlegende Navigation und die
 Für die finale Version der App sind folgende Erweiterungen vorgesehen
 * **Automatisches Fitting & Snapping:** Intelligentes Einrasten von Rohren und automatisches Setzen von Winkeln
 * **Echtzeit-Kollisionsprüfung:** Warnung, wenn sich Leitungen verschiedener Gewerke überschneiden
-* **BIM-Export:** Brückenfunktion zur Übersetzung der Zeichnungen in standardisierte Planersprache (Export als IFC, JSON, UGL)
+* **BIM-Export:** Brückenfunktion zur Übersetzung der Zeichnungen in standardisierte Planersprache (Export als IFC)
 * **Projektplanung** Planungsboards Ablauf Fortschritttracker, Verzögerungsmeldung
 * **Lagerorganisation/Materialplanung** Sotierung, Lagerplatz, Entnahme, Zuordnung Raum
 * **Didaktisches Scaffolding:** Einsatz der App in der Berufsschule als interaktiver Lern-Assistent ("Lücken-Methodik" für Auszubildende im Handwerk)
