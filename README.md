@@ -1,5 +1,7 @@
 # Sommersprint App – Konzeptstudie Smart-Sanierungs-Assistent
 
+Prototyp: https://femke-art-coder.github.io/Sommersprint-App/
+
 Dieser Web-Prototyp ist Teil einer selbstinitiierten Konzeptstudie zur Bau-Digitalisierung. Er entstand als Lernübung, um zu verstehen, wie Gewerke, Raumplanung, Mengenermittlung und Baustellenlogistik digital zusammenspielen.
 
 Der Prototyp ist als reine Web-Oberfläche (HTML) umgesetzt und zeigt den Workflow, nicht ein einsatzfähiges Produkt.
