@@ -1,13 +1,12 @@
 # Sommersprint App – Konzeptstudie Smart-Sanierungs-Assistent
 
-Prototyp: https://femke-art-coder.github.io/Sommersprint-App/
+## Prototyp: https://femke-art-coder.github.io/Sommersprint-App/
+
+Dieser Web-Prototyp ist Teil einer selbstinitiierten Konzeptstudie zur Bau-Digitalisierung. Er entstand als Lernübung, um zu verstehen, wie Gewerke, Raumplanung, Mengenermittlung und Baustellenlogistik digital zusammenspielen.
+Der Prototyp ist als reine Web-Oberfläche (HTML) umgesetzt und zeigt den Workflow, nicht ein einsatzfähiges Produkt.
 
 ## Datenmodell
 Ein IFC-Modell ist ein vollständiges 3D-Datenmodell. Für den Baustellenalltag wird davon nur ein kleiner Teil gebraucht. Die Übung zeigt, welche Daten ich für eine einfache 2D-Wandansicht ausgewählt habe (Geschoss, Raum, Wand, Öffnungen, Bauteile, Maße) und wie sie sich in der IFC-Struktur wiederfinden: [Zum Datenmodell](datenmodell-ifc.md)
-
-Dieser Web-Prototyp ist Teil einer selbstinitiierten Konzeptstudie zur Bau-Digitalisierung. Er entstand als Lernübung, um zu verstehen, wie Gewerke, Raumplanung, Mengenermittlung und Baustellenlogistik digital zusammenspielen.
-
-Der Prototyp ist als reine Web-Oberfläche (HTML) umgesetzt und zeigt den Workflow, nicht ein einsatzfähiges Produkt.
 
 ---
 
