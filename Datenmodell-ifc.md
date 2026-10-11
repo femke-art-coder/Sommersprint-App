@@ -1,4 +1,9 @@
-Leitgedanke: IFC-Modelle sind 3D-Datenmodelle für Planer und enthalten weit mehr Informationen, als ein Handwerker auf der Baustelle braucht. Die Struktur unten zeigt die Auswahl der notwendigsten Daten, die aus einem IFC-Modell in eine einfache 2D-Wandansicht übernommen würden: Geschoss, Raum, Wand, Öffnungen, Bauteile und wenige Eigenschaften wie Maße, Position und Lagerort. Alles andere bleibt im Ursprungsmodell.
+## Leitgedanke: 
+IFC-Modelle sind 3D-Datenmodelle für Planer und enthalten weit mehr Informationen, als ein Handwerker auf der Baustelle braucht. 
+
+Die Struktur unten zeigt die Auswahl der notwendigsten Daten, die aus einem IFC-Modell in eine einfache 2D-Wandansicht übernommen würden: Geschoss, Raum, Wand, Öffnungen, Bauteile und wenige Eigenschaften wie Maße, Position und Lagerort. Alles andere bleibt im Ursprungsmodell.
+
+
 IfcProject ("Sommersprint")
 └── IfcSite ("Standort / Grundstück")
     └── IfcBuilding ("Haus 1")
